@@ -1,0 +1,16 @@
+CACHE MANIFEST 
+
+CACHE: 
+monika.jpg
+bundle.js
+payload.bin
+index.html
+payloads/disableupdates.bin
+payloads/enableupdates.bin
+payloads/ftp.bin
+payloads/app2usb.bin
+payloads/enablebrowser.bin
+payloads/Orbis-Toolbox-900.bin
+
+NETWORK: 
+*

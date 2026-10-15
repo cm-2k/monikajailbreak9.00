@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html manifest="900.manifest" lang="ar" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <title>Monika PS4 Auto Host (9.00) 🐤</title>
+    <style>
+        body {
+            background-color: #ffffff;
+            background-image: url('monika.jpg'); 
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: #ff66a3;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .main-title {
+            font-size: 2.8rem;
+            color: #ff3385;
+            text-shadow: 2px 2px 5px rgba(255, 102, 163, 0.4);
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 10px 30px;
+            border-radius: 40px;
+            border: 2px dashed #ff99c2;
+        }
+
+        #msgs {
+            background: rgba(255, 240, 245, 0.95);
+            border: 3px solid #ff66a3;
+            padding: 20px 45px;
+            border-radius: 50px; 
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #d6336c;
+            box-shadow: 0 8px 25px rgba(255, 102, 163, 0.5);
+            margin: 30px 0;
+            transition: all 0.3s ease;
+            min-width: 50%;
+        }
+        
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            max-width: 750px;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+
+        .pink-pill-btn {
+            background: linear-gradient(135deg, #ff66a3, #ff3385);
+            color: white;
+            border: 2px solid #ff99c2;
+            padding: 14px 30px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            border-radius: 50px; 
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 5px 15px rgba(255, 102, 163, 0.4);
+            min-width: 200px;
+        }
+
+        .pink-pill-btn:hover {
+            background: linear-gradient(135deg, #ff99c2, #ff66a3);
+            transform: translateY(-3px) scale(1.04);
+            box-shadow: 0 8px 25px rgba(255, 102, 163, 0.85);
+        }
+
+        .pink-pill-btn:active {
+            transform: translateY(1px);
+        }
+
+        .credits {
+            margin-top: auto;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            color: #cc0052;
+            background: rgba(255, 255, 255, 0.85);
+            padding: 15px 30px;
+            border-radius: 30px;
+            border: 1px solid #ffb3d1;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .credits a {
+            color: #ff0066;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 0 8px;
+            transition: color 0.2s;
+        }
+
+        .credits a:hover {
+            color: #b30047;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- استدعاء ملف التهكير الخاص بالمطور -->
+    <script src="bundle.js"></script>
+        <!-- كود الكاش والتشغيل التلقائي الصامت والمراقب الذكي -->
+    <script>
+    var uaFull = navigator.userAgent;
+    var match = uaFull.match(/PlayStation 4[ /]([\d.]+)/i);
+    var isPS4 = match !== null;
+    var fwVersion = isPS4 ? match[1] : "Unknown";
+    var fwNum = parseFloat(fwVersion);
+
+    // إلغاء أي رسائل خطأ مزعجة
+    window.addEventListener('error', function(e) { e.preventDefault(); return true; });
+    window.addEventListener('unhandledrejection', function(e) { e.preventDefault(); return true; });
+
+    // المراقب الذكي لرسائل المحرك الخلفية
+    window.log = (msg, color) => { 
+        var msgsBox = document.getElementById('msgs');
+        var toolsBox = document.getElementById('tools-box');
+        
+        if(msgsBox && toolsBox) {
+            let currentMsg = msg.toLowerCase();
+            
+            if (currentMsg.includes("goldhen") || currentMsg.includes("done") || currentMsg.includes("success")) {
+                msgsBox.innerHTML = "GoldHen is loaded by monika, enjoy!";
+                msgsBox.style.borderColor = "#00ff88";
+                
+                toolsBox.style.display = "flex";
+                setTimeout(() => { toolsBox.style.opacity = "1"; }, 100);
+            }
+        }
+    };
+
+    // دالة بدء الاختراق
+    function startJailbreak() {
+        var msgsBox = document.getElementById('msgs');
+        if(msgsBox) {
+            msgsBox.innerHTML = "Monika is starting the jailbreak process... Please wait 🌸";
+            msgsBox.style.borderColor = "#ff99c2";
+        }
+        
+        setTimeout(() => {
+            try {
+                doJBwithPSFreeLapseExploit(); 
+            } catch (error) {
+                if(msgsBox) {
+                    msgsBox.innerHTML = "Jailbreak Failed! Please restart your PS4.";
+                    msgsBox.style.borderColor = "red";
+                }
+            }
+        }, 1500);
+    }
+
+    // ربط أحداث الكاش (بحماية ضد متصفحات الكمبيوتر التي لا تدعم الخاصية)
+    if (window.applicationCache) {
+        window.applicationCache.addEventListener("progress", function(e) {
+            // نمنع ظهور شريط التحميل إذا كان الجهاز غير مدعوم
+            if (!isPS4 || fwNum < 7.00 || fwNum > 9.60) return;
+            var Percent = (Math.round(e.loaded / e.total * 100));
+            var msgsBox = document.getElementById('msgs');
+            if(msgsBox) msgsBox.innerHTML = "Installing Offline Cache: " + Percent + "%";
+        }, false);
+
+        window.applicationCache.oncached = function(e){ 
+            if (!isPS4 || fwNum < 7.00 || fwNum > 9.60) return;
+            var msgsBox = document.getElementById('msgs');
+            if(msgsBox) {
+                msgsBox.innerHTML = "Cache Installed Successfully ✔";
+                msgsBox.style.borderColor = "#00ff88";
+                setTimeout(startJailbreak, 1500);
+            }
+        };
+
+        window.applicationCache.onupdateready = function(e){ 
+            if (!isPS4 || fwNum < 7.00 || fwNum > 9.60) return;
+            var msgsBox = document.getElementById('msgs');
+            if(msgsBox) {
+                msgsBox.innerHTML = "Cache Updated Successfully ✔";
+                msgsBox.style.borderColor = "#00ff88";
+                setTimeout(startJailbreak, 1500);
+            }
+        };
+
+        window.applicationCache.onerror = function(e){ 
+            if (!isPS4 || fwNum < 7.00 || fwNum > 9.60) return;
+            startJailbreak();
+        };
+    }
+
+    // الفحوصات الأمنية عند تحميل الصفحة
+    document.addEventListener("DOMContentLoaded", () => {
+        var msgsBox = document.getElementById('msgs');
+        
+        // 1. الفحص الأول: هل الجهاز بلايستيشن؟
+        if (!isPS4) {
+            msgsBox.innerHTML = "This page is strictly for PlayStation. What are you doing here? Don't you know Monika is watching you? 👁️";
+            msgsBox.style.borderColor = "red";
+            return; // إنهاء السكربت هنا
+        }
+
+        // 2. الفحص الثاني: هل الإصدار مدعوم؟
+        if (fwNum < 7.00 || fwNum > 9.60) {
+            msgsBox.innerHTML = 'Unsupported Firmware: <span style="color: red;">' + fwVersion + '</span>. Monika only loves 7.00 to 9.60!';
+            msgsBox.style.borderColor = "red";
+            return; // إنهاء السكربت هنا
+        }
+
+        // 3. الفحص الثالث: التأكد من حالة الكاش وبدء الاختراق
+        if (window.applicationCache) {
+            if (window.applicationCache.status === window.applicationCache.IDLE) {
+                startJailbreak(); // الكاش موجود مسبقاً، ابدأ فوراً
+            }
+        } else {
+            // في حالة نادرة لم يتعرف فيها البلايستيشن على الكاش
+            startJailbreak();
+        }
+    });
+    </script>
+
+    <!-- العنوان المخصص لـ 9.00 -->
+    <div class="main-title">Just Monika - PS4 jailbreak 9.00 host</div>
+
+    <!-- صندوق رسائل النظام -->
+    <div id="msgs"> Checking Cache Status... 🌸</div>
+
+    <!-- صندوق الأزرار الحقيقية -->
+    <div class="button-container" id="tools-box" style="display: none; opacity: 0; transition: opacity 1s ease;">
+        <button class="pink-pill-btn" onclick="loadPayload('payloads/disableupdates.bin', 'Disable Updates')">Disable Updates</button>
+        <button class="pink-pill-btn" onclick="loadPayload('payloads/enableupdates.bin', 'Enable Updates')">Enable Updates</button>
+        <button class="pink-pill-btn" onclick="loadPayload('payloads/ftp.bin', 'FTP Server')">FTP Server</button>
+        <button class="pink-pill-btn" onclick="loadPayload('payloads/app2usb.bin', 'App2USB')">App2USB</button>
+        <button class="pink-pill-btn" onclick="loadPayload('payloads/enablebrowser.bin', 'Enable Browser')">Enable Browser</button>
+        <button class="pink-pill-btn" onclick="loadPayload('payloads/Orbis-Toolbox-900.bin', 'Orbis Toolbox')">Orbis Toolbox</button>
+    </div>
+
+    <!-- قسم الحقوق -->
+    <div class="credits">
+        Special Thanks to: @lilmonix3 (Monika) | Miftah | @Cm2k | SiSTR0
+    </div>
+
+   <!-- سكريبت حقن أدوات البايلود عبر البورت 9090 -->
+    <script>
+        function loadPayload(payloadPath, toolName) {
+            const msgsBox = document.getElementById('msgs');
+            
+            msgsBox.innerText = toolName + " is loading by monika";
+            msgsBox.style.borderColor = "#ff99c2";
+            
+            fetch(payloadPath)
+                .then(response => response.arrayBuffer())
+                .then(data => {
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('POST', 'http://127.0.0.1:9090/', true);
+                    
+                    xhr.onload = function() {
+                        if (xhr.status === 200) {
+                            if (toolName === "Disable Updates") {
+                                msgsBox.innerText = toolName + " is loaded by monika, enjoy using internet safely !";
+                            } else if (toolName === "Enable Updates") {
+                                msgsBox.innerText = toolName + " is loaded by monika";
+                            } else {
+                                msgsBox.innerText = toolName + " is loaded by monika, enjoy !";
+                            }
+                            msgsBox.style.borderColor = "#00ff88";
+                        } else {
+                            msgsBox.innerText = toolName + " failed";
+                            msgsBox.style.borderColor = "red";
+                        }
+                    };
+                    
+                    xhr.onerror = function() {
+                        msgsBox.innerText = toolName + " failed";
+                        msgsBox.style.borderColor = "red";
+                    };
+                    
+                    xhr.send(data);
+                })
+                .catch(error => {
+                    msgsBox.innerText = toolName + " failed";
+                    msgsBox.style.borderColor = "red";
+                });
+        }
+    </script>
+</body>
+</html>
