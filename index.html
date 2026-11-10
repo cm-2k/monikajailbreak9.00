@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html manifest="900.manifest" lang="ar" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <title>Monika PS4 Auto Host (9.00) 🐤</title>
+    <style>
+        body {
+            background-color: #ffffff;
+            background-image: url('monika.jpg'); 
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: #ff66a3;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding-top: 30px;
+            box-sizing: border-box;
+        }
+
+        .main-title {
+            font-size: 2.5rem;
+            color: #ff3385;
+            text-shadow: 2px 2px 5px rgba(255, 102, 163, 0.4);
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.85);
+            padding: 8px 30px;
+            border-radius: 40px;
+            border: 2px dashed #ff99c2;
+        }
+
+        #msgs {
+            background: rgba(255, 240, 245, 0.95);
+            border: 3px solid #ff66a3;
+            padding: 15px 40px;
+            border-radius: 50px; 
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #d6336c;
+            box-shadow: 0 8px 25px rgba(255, 102, 163, 0.5);
+            margin: 15px 0;
+            transition: all 0.3s ease;
+            min-width: 55%;
+        }
+        
+        /* ضبط مكان وتباعد الأزرار لتناسب شاشة التلفاز على PS4 */
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 28px 35px;
+            max-width: 920px;
+            padding: 20px;
+            margin-top: 110px;
+            margin-bottom: 20px;
+        }
+
+        .pink-pill-btn {
+            background: linear-gradient(135deg, #ff66a3, #ff3385);
+            color: white;
+            border: 3px solid #ff99c2;
+            padding: 18px 32px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 50px; 
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 6px 18px rgba(255, 102, 163, 0.5);
+            min-width: 250px;
+        }
+
+        .pink-pill-btn:hover {
+            background: linear-gradient(135deg, #ff99c2, #ff66a3);
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(255, 102, 163, 0.9);
+        }
+
+        .pink-pill-btn:active {
+            transform: translateY(1px);
+        }
+
+        /* زر صغير احتياطي لإعادة التفعيل يدوياً عند الحاجة فقط */
+        .re-jb-btn {
+            background: rgba(255, 255, 255, 0.8);
+            color: #d6336c;
+            border: 1px solid #ff66a3;
+            padding: 6px 18px;
+            font-size: 0.95rem;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .credits {
+            margin-top: auto;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            color: #cc0052;
+            background: rgba(255, 255, 255, 0.85);
+            padding: 12px 30px;
+            border-radius: 30px;
+            border: 1px solid #ffb3d1;
+        }
+    </style>
+</head>
+<body>
+
+    <script src="bundle.js"></script>
+    
+    <script>
+    var uaFull = navigator.userAgent;
+    var match = uaFull.match(/PlayStation 4[ /]([\d.]+)/i);
+    var isPS4 = match !== null;
+    var fwVersion = isPS4 ? match[1] : "Unknown";
+    var fwNum = parseFloat(fwVersion);
+
+    window.addEventListener('error', function(e) { e.preventDefault(); return true; });
+    window.addEventListener('unhandledrejection', function(e) { e.preventDefault(); return true; });
+
+    function showTools(welcomeMsg) {
+        var msgsBox = document.getElementById('msgs');
+        var toolsBox = document.getElementById('tools-box');
+        var reJbBtn = document.getElementById('re-jb');
+        
+        if(msgsBox && toolsBox) {
+            msgsBox.innerHTML = welcomeMsg;
+            msgsBox.style.borderColor = "#00ff88";
+            toolsBox.style.display = "flex";
+            if(reJbBtn) reJbBtn.style.display = "inline-block";
+            setTimeout(() => { toolsBox.style.opacity = "1"; }, 100);
+        }
+    }
+
+    // المراقب الذكي لرسائل المحرك الخلفية
+    window.log = (msg, color) => { 
+        var msgsBox = document.getElementById('msgs');
+        if(msgsBox) {
+            let currentMsg = msg.toLowerCase();
+            if (currentMsg.includes("goldhen") || currentMsg.includes("done") || currentMsg.includes("succeeded") || currentMsg.includes("success")) {
+                sessionStorage.setItem('monika_jb_done', 'true');
+                showTools("GoldHen is loaded by monika, enjoy!");
+            }
+        }
+    };
+
+    function startJailbreak() {
+        sessionStorage.removeItem('monika_jb_done');
+        var msgsBox = document.getElementById('msgs');
+        var toolsBox = document.getElementById('tools-box');
+        var reJbBtn = document.getElementById('re-jb');
+        if(toolsBox) toolsBox.style.display = "none";
+        if(reJbBtn) reJbBtn.style.display = "none";
+        
+        if(msgsBox) {
+            msgsBox.innerHTML = "Wait until Monika jailbreaks your Ps4 and injects GoldHen! ";
+            msgsBox.style.borderColor = "#ff99c2";
+        }
+        
+        setTimeout(() => {
+            try {
+                doJBwithPSFreeLapseExploit(); 
+            } catch (error) {
+                if(msgsBox) {
+                    msgsBox.innerHTML = "Oops! Monika messed up the kernel code... 👉🏻👈🏻 Please restart your PS4.";
+                    msgsBox.style.borderColor = "red";
+                }
+            }
+        }, 1200);
+    }
+
+    // فحص ذكي مزدوج: يعمل على HTTPS و HTTP مباشرة بدون حظر
+    function checkGoldHenAndStart() {
+        if (sessionStorage.getItem('monika_jb_done') === 'true') {
+            showTools("Welcome back! GoldHen is already loaded, silly~ Need a payload, or did you come to spend time with me?");
+            return;
+        }
+
+        fetch("http://127.0.0.1:9090/", { mode: 'no-cors' })
+            .then(() => {
+                sessionStorage.setItem('monika_jb_done', 'true');
+                showTools("Welcome back! GoldHen is already loaded, silly~ Need a payload, or did you come to spend time with me?");
+            })
+            .catch(() => {
+                startJailbreak();
+            });
+    }
+
+    if (window.applicationCache) {
+        window.applicationCache.addEventListener("progress", function(e) {
+            if (!isPS4 || fwNum < 7.00 || fwNum > 9.60) return;
+            var Percent = (Math.round(e.loaded / e.total * 100));
+            var msgsBox = document.getElementById('msgs');
+            if(msgsBox) msgsBox.innerHTML = "Installing Offline Cache: " + Percent + "%";
+        }, false);
+
+        window.applicationCache.oncached = function(e){ 
+            if (!isPS4 || fwNum < 7.00 || fwNum > 9.60) return;
+            var msgsBox = document.getElementById('msgs');
+            if(msgsBox) {
+                msgsBox.innerHTML = "Cache Installed Successfully ✔";
+                msgsBox.style.borderColor = "#00ff88";
+                setTimeout(checkGoldHenAndStart, 1500);
+            }
+        };
+
+        window.applicationCache.onupdateready = function(e){ 
+            if (!isPS4 || fwNum < 7.00 || fwNum > 9.60) return;
+            window.applicationCache.swapCache();
+            location.reload();
+        };
+
+        window.applicationCache.onerror = function(e){ 
+            if (!isPS4 || fwNum < 7.00 || fwNum > 9.60) return;
+            checkGoldHenAndStart();
+        };
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        var msgsBox = document.getElementById('msgs');
+        
+        if (!isPS4) {
+            msgsBox.innerHTML = "This page is strictly for PlayStation. What are you doing here? Don't you know Monika is watching you? 👁️";
+            msgsBox.style.borderColor = "red";
+            return;
+        }
+
+        if (fwNum < 7.00 || fwNum > 9.60) {
+            msgsBox.innerHTML = 'Unsupported Firmware: <span style="color: red;">' + fwVersion + '</span>. Monika only loves 7.00 to 9.60!';
+            msgsBox.style.borderColor = "red";
+            return;
+        }
+
+        if (window.applicationCache && window.applicationCache.status === window.applicationCache.IDLE) {
+            checkGoldHenAndStart();
+        } else if (!window.applicationCache) {
+            checkGoldHenAndStart();
+        }
+    });
+    </script>
+
+    <div class="main-title">Just Monika - PS4 jailbreak 9.00 host</div>
+
+    <div id="msgs">Checking Cache Status...</div>
+
+    <div class="button-container" id="tools-box" style="display: none; opacity: 0; transition: opacity 0.8s ease;">
+        <button class="pink-pill-btn" onclick="loadPayload('payloads/disableupdates.bin', 'Disable Updates')">Disable Updates</button>
+        <button class="pink-pill-btn" onclick="loadPayload('payloads/enableupdates.bin', 'Enable Updates')">Enable Updates</button>
+        <button class="pink-pill-btn" onclick="loadPayload('payloads/ftp.bin', 'FTP Server')">FTP Server</button>
+        <button class="pink-pill-btn" onclick="loadPayload('payloads/app2usb.bin', 'App2USB')">App2USB</button>
+        <button class="pink-pill-btn" onclick="loadPayload('payloads/enablebrowser.bin', 'Enable Browser')">Enable Browser</button>
+        <button class="pink-pill-btn" onclick="loadPayload('payloads/Orbis-Toolbox-900.bin', 'Orbis Toolbox')">Orbis Toolbox</button>
+    </div>
+
+    <button id="re-jb" class="re-jb-btn" style="display: none;" onclick="startJailbreak()">🔄 Re-run Jailbreak</button>
+
+    <div class="credits">
+        Special Thanks to: @lilmonix3 (Monika) | Miftah | @Cm2k | SiSTR0
+    </div>
+    <script>
+        function loadPayload(payloadPath, toolName) {
+            const msgsBox = document.getElementById('msgs');
+            msgsBox.innerText = toolName + " is loading by monika...";
+            msgsBox.style.borderColor = "#ff99c2";
+            
+            // 1. جلب ملف الـ Payload باستخدام XHR
+            var getReq = new XMLHttpRequest();
+            getReq.open('GET', payloadPath, true);
+            getReq.responseType = 'arraybuffer'; // نطلب الملف كبيانات ثنائية الخام
+            
+            getReq.onload = function() {
+                if (getReq.status === 200) {
+                    var payloadData = getReq.response;
+                    
+                    // 2. إرسال الملف إلى سيرفر BinLoader في الجولدن (المنفذ 9090)
+                    var sendReq = new XMLHttpRequest();
+                    sendReq.open('POST', 'http://127.0.0.1:9090/', true);
+                    
+                    sendReq.onload = function() {
+                        // عند نجاح الإرسال
+                        if (toolName === "Disable Updates") {
+                            msgsBox.innerText = toolName + " is loaded by monika, enjoy using internet safely !";
+                        } else if (toolName === "Enable Updates") {
+                            msgsBox.innerText = toolName + " is loaded by monika";
+                        } else {
+                            msgsBox.innerText = toolName + " is loaded by monika, enjoy !";
+                        }
+                        msgsBox.style.borderColor = "#00ff88";
+                    };
+                    
+                    sendReq.onerror = function() {
+                        // عند فشل الاتصال بالمنفذ 9090
+                        msgsBox.innerText = toolName + " failed! (Please enable BinLoader in GoldHEN settings)";
+                        msgsBox.style.borderColor = "red";
+                    };
+                    
+                    sendReq.send(payloadData);
+                } else {
+                    msgsBox.innerText = "Error: Payload file not found!";
+                    msgsBox.style.borderColor = "red";
+                }
+            };
+            
+            getReq.onerror = function() {
+                msgsBox.innerText = "Error fetching the payload!";
+                msgsBox.style.borderColor = "red";
+            };
+            
+            getReq.send();
+        }
+</script>
+</body>
+</html>
